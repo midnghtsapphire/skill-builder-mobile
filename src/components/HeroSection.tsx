@@ -1,9 +1,13 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, ArrowRight, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import heroImage from "@/assets/hero-worker.jpg";
 
 const HeroSection = () => {
+  const { user } = useAuth();
+
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Image with Overlay */}
@@ -55,10 +59,21 @@ const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 animate-slide-up animation-delay-400">
-              <Button variant="hero" size="lg">
-                Start Free Trial
-                <ArrowRight className="w-5 h-5" />
-              </Button>
+              {user ? (
+                <Link to="/dashboard">
+                  <Button variant="hero" size="lg">
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="hero" size="lg">
+                    Start Free Trial
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
               <Button variant="outline" size="lg">
                 <Play className="w-5 h-5" />
                 Watch Demo

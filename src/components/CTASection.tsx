@@ -1,7 +1,11 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CTASection = () => {
+  const { user } = useAuth();
+
   return (
     <section className="py-20 md:py-28 bg-gradient-dark relative overflow-hidden">
       {/* Background Glow */}
@@ -17,10 +21,21 @@ const CTASection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="xl">
-              Start Free Trial
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="hero" size="xl">
+                  Go to Dashboard
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button variant="hero" size="xl">
+                  Start Free Trial
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
             <Button variant="outline" size="xl">
               Schedule Demo
             </Button>

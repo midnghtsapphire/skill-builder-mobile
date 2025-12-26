@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Wrench, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, Wrench, User, LogOut, LayoutDashboard, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -27,16 +27,16 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#courses" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+            <Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Courses
-            </a>
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+            </Link>
+            <a href="/#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Features
             </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+            <a href="/#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Pricing
             </a>
-            <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+            <a href="/#contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Contact
             </a>
           </nav>
@@ -87,16 +87,17 @@ const Header = () => {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
             <nav className="flex flex-col gap-4">
-              <a href="#courses" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/courses" className="text-foreground py-2 font-medium flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                <BookOpen className="w-4 h-4" />
                 Courses
-              </a>
-              <a href="#features" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
+              </Link>
+              <a href="/#features" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
                 Features
               </a>
-              <a href="#pricing" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
+              <a href="/#pricing" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
                 Pricing
               </a>
-              <a href="#contact" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
+              <a href="/#contact" className="text-foreground py-2 font-medium" onClick={() => setMobileMenuOpen(false)}>
                 Contact
               </a>
               <div className="flex flex-col gap-3 pt-4 border-t border-border/50">

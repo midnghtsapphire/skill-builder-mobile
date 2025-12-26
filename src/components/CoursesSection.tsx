@@ -1,68 +1,57 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import CourseCard from "@/components/CourseCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-const courses = [
-  {
-    title: "Copper Pipe Soldering Fundamentals",
-    category: "Plumbing",
-    duration: "45 min",
-    lessons: 8,
-    progress: 65,
-    thumbnail: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&auto=format&fit=crop&q=60",
-    isNew: false,
-    difficulty: "Beginner" as const,
-  },
-  {
-    title: "Reading Electrical Blueprints",
-    category: "Electrical",
-    duration: "1.5 hrs",
-    lessons: 12,
-    thumbnail: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=60",
-    isNew: true,
-    difficulty: "Intermediate" as const,
-  },
-  {
-    title: "HVAC System Diagnostics",
-    category: "HVAC",
-    duration: "2 hrs",
-    lessons: 15,
-    progress: 30,
-    thumbnail: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&auto=format&fit=crop&q=60",
-    isNew: false,
-    difficulty: "Advanced" as const,
-  },
-  {
-    title: "Drywall Installation Basics",
-    category: "Construction",
-    duration: "1 hr",
-    lessons: 10,
-    thumbnail: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=60",
-    isNew: true,
-    difficulty: "Beginner" as const,
-  },
-  {
-    title: "Welding Safety & Techniques",
-    category: "Manufacturing",
-    duration: "2.5 hrs",
-    lessons: 18,
-    thumbnail: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&auto=format&fit=crop&q=60",
-    isNew: false,
-    difficulty: "Intermediate" as const,
-  },
-  {
-    title: "PEX Plumbing Installation",
-    category: "Plumbing",
-    duration: "55 min",
-    lessons: 9,
-    progress: 100,
-    thumbnail: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&auto=format&fit=crop&q=60",
-    isNew: false,
-    difficulty: "Beginner" as const,
-  },
-];
+interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  thumbnail_url: string | null;
+  duration_minutes: number;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  lessons_count: number;
+}
 
 const CoursesSection = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Courses");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (!error && data) {
+        setCourses(data as Course[]);
+      }
+      setLoading(false);
+    };
+
+    fetchCourses();
+  }, []);
+
+  const categories = ["All Courses", ...new Set(courses.map((c) => c.category))];
+  
+  const filteredCourses = selectedCategory === "All Courses" 
+    ? courses 
+    : courses.filter((c) => c.category === selectedCategory);
+
+  const formatDuration = (minutes: number) => {
+    if (minutes < 60) return `${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
   return (
     <section id="courses" className="py-20 md:py-28 bg-gradient-dark">
       <div className="container mx-auto px-4">
@@ -78,11 +67,12 @@ const CoursesSection = () => {
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {["All Courses", "Plumbing", "Electrical", "HVAC", "Construction", "Manufacturing"].map((tab, i) => (
+          {categories.map((tab) => (
             <Button
               key={tab}
-              variant={i === 0 ? "default" : "secondary"}
+              variant={selectedCategory === tab ? "default" : "secondary"}
               size="sm"
+              onClick={() => setSelectedCategory(tab)}
             >
               {tab}
             </Button>
@@ -90,24 +80,49 @@ const CoursesSection = () => {
         </div>
 
         {/* Course Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {courses.map((course, index) => (
-            <div
-              key={course.title}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <CourseCard {...course} />
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-video bg-muted rounded-t-xl" />
+                <div className="p-5 bg-card rounded-b-xl space-y-3">
+                  <div className="h-4 bg-muted rounded w-1/4" />
+                  <div className="h-6 bg-muted rounded w-3/4" />
+                  <div className="h-4 bg-muted rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {filteredCourses.map((course, index) => (
+              <Link
+                key={course.id}
+                to={`/courses/${course.id}`}
+                className="animate-slide-up block"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CourseCard
+                  title={course.title}
+                  category={course.category}
+                  duration={formatDuration(course.duration_minutes)}
+                  lessons={course.lessons_count}
+                  thumbnail={course.thumbnail_url || "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800"}
+                  difficulty={course.difficulty}
+                />
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* View All CTA */}
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
-            Browse All 500+ Courses
-            <ArrowRight className="w-5 h-5" />
-          </Button>
+          <Link to="/courses">
+            <Button variant="outline" size="lg">
+              Browse All Courses
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

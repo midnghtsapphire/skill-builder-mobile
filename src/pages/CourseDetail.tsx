@@ -17,6 +17,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import LessonQuiz from "@/components/LessonQuiz";
 
 interface Course {
   id: string;
@@ -275,6 +276,17 @@ const CourseDetail = () => {
                     Lesson Completed
                   </Badge>
                 )}
+
+                {/* Lesson Quiz */}
+                <LessonQuiz 
+                  lessonId={currentLesson.id}
+                  userId={user?.id || null}
+                  onQuizComplete={(passed) => {
+                    if (passed && !isLessonCompleted(currentLesson.id)) {
+                      markLessonComplete(currentLesson.id);
+                    }
+                  }}
+                />
               </div>
             )}
           </div>

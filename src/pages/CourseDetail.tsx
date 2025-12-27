@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import LessonQuiz from "@/components/LessonQuiz";
+import CourseCertificate from "@/components/CourseCertificate";
 
 interface Course {
   id: string;
@@ -120,6 +121,7 @@ const CourseDetail = () => {
 
   const completedCount = progress.filter(p => p.completed).length;
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
+  const isCourseCompleted = lessons.length > 0 && completedCount === lessons.length;
 
   const markLessonComplete = async (lessonId: string) => {
     if (!user || !course) {
@@ -287,6 +289,16 @@ const CourseDetail = () => {
                     }
                   }}
                 />
+
+                {/* Certificate */}
+                {user && isCourseCompleted && (
+                  <CourseCertificate
+                    courseId={course.id}
+                    courseTitle={course.title}
+                    isCompleted={isCourseCompleted}
+                    userId={user.id}
+                  />
+                )}
               </div>
             )}
           </div>

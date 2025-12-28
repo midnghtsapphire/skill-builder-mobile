@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CourseSearch from "@/components/CourseSearch";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, BookOpen, ArrowRight } from "lucide-react";
+import { Clock, BookOpen, ArrowRight, Search } from "lucide-react";
 
 interface Course {
   id: string;
@@ -20,9 +21,11 @@ interface Course {
 }
 
 const Courses = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const searchQuery = searchParams.get("search") || "";
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -43,9 +46,18 @@ const Courses = () => {
 
   const categories = ["All", ...new Set(courses.map((c) => c.category))];
   
-  const filteredCourses = selectedCategory === "All" 
-    ? courses 
-    : courses.filter((c) => c.category === selectedCategory);
+  const filteredCourses = courses.filter((course) => {
+    const matchesCategory = selectedCategory === "All" || course.category === selectedCategory;
+    const matchesSearch = !searchQuery || 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const clearSearch = () => {
+    setSearchParams({});
+  };
 
   const difficultyColors = {
     Beginner: "success",
@@ -75,6 +87,24 @@ const Courses = () => {
               Practical, hands-on training modules created by master tradespeople.
             </p>
           </div>
+
+          {/* Search Bar */}
+          <div className="max-w-xl mx-auto mb-8">
+            <CourseSearch placeholder="Search by title, description, or category..." />
+          </div>
+
+          {/* Search Results Info */}
+          {searchQuery && (
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">
+                Showing results for "<strong className="text-foreground">{searchQuery}</strong>"
+              </span>
+              <Button variant="ghost" size="sm" onClick={clearSearch}>
+                Clear
+              </Button>
+            </div>
+          )}
 
           {/* Category Filter */}
           <div className="flex flex-wrap justify-center gap-3 mb-10">

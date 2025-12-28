@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Wrench, User, LogOut, LayoutDashboard, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import CourseSearch from "@/components/CourseSearch";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,7 +27,8 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
+            <CourseSearch className="w-64" placeholder="Search courses..." />
             <Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Courses
             </Link>

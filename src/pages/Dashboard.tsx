@@ -15,7 +15,8 @@ import {
   TrendingUp, 
   Play,
   ChevronRight,
-  User
+  User,
+  Users
 } from "lucide-react";
 
 interface Profile {
@@ -260,11 +261,13 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div>
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="secondary" className="h-auto py-6 flex-col gap-2">
-              <BookOpen className="w-6 h-6" />
-              Browse Courses
-            </Button>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <Link to="/courses" className="w-full">
+              <Button variant="secondary" className="h-auto py-6 flex-col gap-2 w-full">
+                <BookOpen className="w-6 h-6" />
+                Browse Courses
+              </Button>
+            </Link>
             <Button variant="secondary" className="h-auto py-6 flex-col gap-2">
               <Award className="w-6 h-6" />
               View Certificates
@@ -273,6 +276,12 @@ const Dashboard = () => {
               <Clock className="w-6 h-6" />
               My Checklists
             </Button>
+            <Link to="/manager" className="w-full">
+              <Button variant="secondary" className="h-auto py-6 flex-col gap-2 w-full">
+                <Users className="w-6 h-6" />
+                Manager Dashboard
+              </Button>
+            </Link>
             <Link to="/profile" className="w-full">
               <Button variant="secondary" className="h-auto py-6 flex-col gap-2 w-full">
                 <User className="w-6 h-6" />
